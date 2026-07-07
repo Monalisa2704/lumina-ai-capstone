@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina AI Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0b0b0e;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #a78bfa;
+            cursor: pointer;
+            margin-top: -4px;
+            box-shadow: 0 0 0 3px #131318;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #2d2d38;
+            border-radius: 2px;
+        }
+
+        .checkerboard {
+            background-color: #1a1a24;
+            background-image: linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%, #13131a),
+                linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%, #13131a);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col overflow-hidden text-sm">
+
+    <!-- Top Header -->
+    <header class="flex justify-between items-center px-6 py-3 bg-[#13131a] border-b border-white/5 z-20">
+        <div class="flex items-center gap-3">
+            <span class="text-violet-500 text-xl">✨</span>
+            <h1 class="text-lg font-bold tracking-wide text-white">Lumina AI <span
+                    class="text-xs text-gray-500 ml-2 font-normal">Editor Agent</span></h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div
+                class="px-3 py-1 bg-emerald-900/40 text-emerald-400 border border-emerald-700/50 rounded-full text-xs font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Orientation Guardrail Active
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR: Tools -->
+        <aside
+            class="w-[300px] bg-[#13131a] border-r border-white/5 flex flex-col z-10 h-full overflow-y-auto scrollbar-hide">
+
+            <div class="p-5 border-b border-white/5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Lighting Studio</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Brightness</span><span
+                                id="val-brightness">100%</span></div><input type="range" min="0" max="200" value="100"
+                            id="brightness" oninput="updateState('brightness', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Contrast</span><span
+                                id="val-contrast">100%</span></div><input type="range" min="0" max="200" value="100"
+                            id="contrast" oninput="updateState('contrast', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Exposure</span><span
+                                id="val-exposure">100%</span></div><input type="range" min="0" max="200" value="100"
+                            id="exposure" oninput="updateState('exposure', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Saturation</span><span
+                                id="val-saturation">100%</span></div><input type="range" min="0" max="200" value="100"
+                            id="saturation" oninput="updateState('saturation', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-b border-white/5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Transform Tools</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Scale / Zoom</span><span
+                                id="val-scale">100%</span></div><input type="range" min="10" max="300" value="100"
+                            id="scale" oninput="updateState('scale', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Shift X
+                                (Horizontal)</span><span id="val-posX">0px</span></div><input type="range" min="-500"
+                            max="500" value="0" id="posX" oninput="updateState('posX', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Shift Y
+                                (Vertical)</span><span id="val-posY">0px</span></div><input type="range" min="-500"
+                            max="500" value="0" id="posY" oninput="updateState('posY', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-b border-white/5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Sticker Outline & Shadow</h3>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Outline Thickness</span><span
+                                id="val-outlineSize">0px</span></div><input type="range" min="0" max="50" value="0"
+                            id="outlineSize" oninput="updateState('outlineSize', this.value)">
+                    </div>
+                    <div class="flex items-center justify-between"><span class="text-xs text-gray-400">Outline
+                            Color</span>
+                        <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-600 p-[1px]"><input
+                                type="color" id="outlineColor" value="#ffffff"
+                                class="w-full h-full cursor-pointer bg-transparent border-0 scale-150"
+                                oninput="updateState('outlineColor', this.value)"></div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Drop Shadow Blur</span><span
+                                id="val-shadowBlur">0px</span></div><input type="range" min="0" max="100" value="0"
+                            id="shadowBlur" oninput="updateState('shadowBlur', this.value)">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-2"><span>Drop Shadow
+                                Distance</span><span id="val-shadowDist">0px</span></div><input type="range" min="0"
+                            max="50" value="0" id="shadowDist" oninput="updateState('shadowDist', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Background Canvas</h3>
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <button onclick="updateState('bgType', 'transparent')" id="btn-bg-trans"
+                        class="flex flex-col items-center justify-center py-3 bg-violet-600 text-white text-[10px] font-semibold rounded-lg border border-violet-500 gap-2 transition">Transparent</button>
+                    <button onclick="updateState('bgType', 'solid')" id="btn-bg-solid"
+                        class="flex flex-col items-center justify-center py-3 bg-[#1e1e24] hover:bg-[#25252b] text-gray-300 text-[10px] font-semibold rounded-lg border border-white/5 transition gap-2">Solid</button>
+                    <button onclick="updateState('bgType', 'gradient')" id="btn-bg-grad"
+                        class="flex flex-col items-center justify-center py-3 bg-[#1e1e24] hover:bg-[#25252b] text-gray-300 text-[10px] font-semibold rounded-lg border border-white/5 transition gap-2">Gradient</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER STAGE: Dual Pane Workspace -->
+        <section class="flex-1 flex flex-col relative bg-[#09090b]">
+            <div class="flex items-center px-6 py-3 border-b border-white/5 gap-6">
+                <button id="tab-digital" onclick="switchTab('digital')"
+                    class="text-gray-400 hover:text-gray-300 text-sm font-medium pb-1 transition">Digital
+                    Sticker</button>
+                <button id="tab-compare" onclick="switchTab('compare')"
+                    class="text-white text-sm font-medium border-b-2 border-white pb-1 transition">Original vs
+                    Sticker</button>
+                <div class="ml-auto">
+                    <button
+                        class="w-8 h-8 rounded bg-[#13131a] border border-white/10 flex items-center justify-center hover:bg-white/10"
+                        onclick="document.getElementById('file-upload').click()">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="upload-ui"
+                class="absolute inset-0 top-[60px] flex flex-col items-center justify-center z-20 bg-[#09090b]">
+                <div class="w-20 h-20 bg-[#13131a] rounded-2xl flex items-center justify-center mx-auto mb-6 cursor-pointer hover:bg-violet-900/40 transition border border-white/10 shadow-lg"
+                    onclick="document.getElementById('file-upload').click()">
+                    <svg class="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                </div>
+                <h2 class="font-bold text-xl mb-2 text-white">Upload Raw Product Photo</h2>
+                <p class="text-gray-500 text-sm max-w-sm text-center mx-auto mb-6">Step 1: Editor Agent cuts the
+                    background so you can polish it.</p>
+                <button onclick="document.getElementById('file-upload').click()"
+                    class="bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 px-6 rounded-lg transition">Choose
+                    File</button>
+                <input type="file" id="file-upload" class="hidden" accept="image/*"
+                    onchange="handleUpload(this.files[0])">
+                <p id="error-message" class="text-red-400 font-semibold hidden mt-4"></p>
+            </div>
+
+            <div id="loading-ui"
+                class="hidden absolute inset-0 top-[60px] bg-[#09090b]/90 flex-col items-center justify-center z-30 backdrop-blur-sm">
+                <div class="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-4">
+                </div>
+                <p class="animate-pulse font-medium text-violet-300 text-sm">Editor Agent is cutting the background...
+                </p>
+            </div>
+
+            <div id="preview-ui" class="hidden flex-1 grid grid-cols-2 gap-4 p-6 overflow-hidden">
+                <div id="raw-pane"
+                    class="bg-[#13131a] rounded-xl border border-white/5 relative flex items-center justify-center overflow-hidden transition-all duration-300">
+                    <div
+                        class="absolute top-4 left-4 bg-[#1a1a24] text-gray-400 text-[10px] uppercase font-bold px-3 py-1 rounded border border-white/10 z-10">
+                        Raw Photo</div>
+                    <img id="raw-photo-preview" class="max-w-full max-h-full object-contain p-4 opacity-70" src=""
+                        alt="Raw Image">
+                </div>
+                <div
+                    class="bg-[#13131a] rounded-xl border border-white/5 relative flex items-center justify-center overflow-hidden checkerboard transition-all duration-300">
+                    <div
+                        class="absolute top-4 left-4 bg-violet-900/50 text-violet-300 text-[10px] uppercase font-bold px-3 py-1 rounded border border-violet-500/30 z-10 backdrop-blur-sm">
+                        Polished Sticker</div>
+                    <canvas id="main-canvas" class="max-w-full max-h-full"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT SIDEBAR: Export & Handoff -->
+        <aside
+            class="w-[300px] bg-[#13131a] border-l border-white/5 flex flex-col h-full overflow-y-auto scrollbar-hide">
+
+            <div class="p-6 border-b border-white/5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Studio Presets</h3>
+                <div class="space-y-2">
+                    <button onclick="applyPreset(100, 100, 100)"
+                        class="w-full text-left px-4 py-2.5 rounded-lg border border-violet-500/50 bg-violet-900/20 text-violet-300 text-xs font-medium flex justify-between items-center transition">Clean
+                        Studio <div class="w-1.5 h-1.5 rounded-full bg-violet-400"></div></button>
+                    <button onclick="applyPreset(115, 110, 125)"
+                        class="w-full text-left px-4 py-2.5 rounded-lg border border-white/5 bg-[#1a1a24] hover:bg-[#22222d] text-gray-300 text-xs font-medium transition">Golden
+                        Hour</button>
+                    <button onclick="applyPreset(95, 120, 110)"
+                        class="w-full text-left px-4 py-2.5 rounded-lg border border-white/5 bg-[#1a1a24] hover:bg-[#22222d] text-gray-300 text-xs font-medium transition">High
+                        Contrast</button>
+                </div>
+            </div>
+
+            <!-- The NEW Export & Handoff Section -->
+            <div class="p-6">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Asset Handoff</h3>
+
+                <button onclick="downloadSticker()"
+                    class="w-full bg-[#1a1a24] hover:bg-[#22222d] border border-white/10 transition text-gray-300 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download PNG Only
+                </button>
+
+                <button onclick="sendToMarketing()"
+                    class="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 transition text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,72,153,0.3)] mb-6 text-sm transform hover:-translate-y-0.5">
+                    Send to Marketing Desk 🚀
+                </button>
+            </div>
+
+            <div class="mt-auto p-4 border-t border-white/5 bg-[#0f0f13]">
+                <div class="flex items-start gap-2 text-xs text-gray-500">
+                    <svg class="w-4 h-4 text-violet-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p><strong class="text-gray-400 font-semibold mb-1 block">A2A Architecture</strong>Once you are
+                        happy with the visual edit, hand off the asset to the Marketing Manager Agent.</p>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <script>
+        const canvas = document.getElementById('main-canvas');
+        const ctx = canvas.getContext('2d');
+        const sourceImage = new Image();
+        sourceImage.crossOrigin = "Anonymous";
+
+        // Store the URL so we can pass it to the Marketing Desk
+        let currentStickerUrl = '';
+
+        let state = {
+            scale: 100, posX: 0, posY: 0,
+            outlineSize: 0, outlineColor: '#ffffff',
+            shadowBlur: 0, shadowDist: 0,
+            brightness: 100, contrast: 100, exposure: 100, saturation: 100,
+            bgType: 'transparent', bgColor: '#ff00ff',
+            chroma: 20
+        };
+
+        function switchTab(tabName) {
+            const previewUi = document.getElementById('preview-ui');
+            const rawPane = document.getElementById('raw-pane');
+            const tabDigital = document.getElementById('tab-digital');
+            const tabCompare = document.getElementById('tab-compare');
+
+            if (tabName === 'digital') {
+                tabDigital.className = "text-white text-sm font-medium border-b-2 border-white pb-1 transition";
+                tabCompare.className = "text-gray-400 hover:text-gray-300 text-sm font-medium pb-1 transition";
+                previewUi.classList.remove('grid-cols-2');
+                previewUi.classList.add('grid-cols-1');
+                rawPane.classList.add('hidden');
+            } else {
+                tabCompare.className = "text-white text-sm font-medium border-b-2 border-white pb-1 transition";
+                tabDigital.className = "text-gray-400 hover:text-gray-300 text-sm font-medium pb-1 transition";
+                previewUi.classList.remove('grid-cols-1');
+                previewUi.classList.add('grid-cols-2');
+                rawPane.classList.remove('hidden');
+            }
+            setTimeout(renderCanvas, 50);
+        }
+
+        function updateState(key, value) {
+            state[key] = key.includes('Color') || key.includes('Type') ? value : parseInt(value);
+            const label = document.getElementById(`val-${key}`);
+            if (label) label.innerText = key.includes('pos') || key.includes('Size') || key.includes('Blur') || key.includes('Dist') ? value + 'px' : value + '%';
+            const inputEl = document.getElementById(key);
+            if (inputEl && inputEl.type === 'range') inputEl.value = value;
+
+            if (key === 'bgType') {
+                const types = ['trans', 'solid', 'grad'];
+                types.forEach(t => {
+                    const btn = document.getElementById(`btn-bg-${t}`);
+                    if (value === 'transparent' && t === 'trans' || value === 'solid' && t === 'solid' || value === 'gradient' && t === 'grad') {
+                        btn.className = "flex flex-col items-center justify-center py-3 bg-violet-600 text-white text-[10px] font-semibold rounded-lg border border-violet-500 gap-2 transition";
+                    } else {
+                        btn.className = "flex flex-col items-center justify-center py-3 bg-[#1e1e24] hover:bg-[#25252b] text-gray-300 text-[10px] font-semibold rounded-lg border border-white/5 transition gap-2";
+                    }
+                });
+            }
+            renderCanvas();
+        }
+
+        function applyPreset(b, c, s) {
+            updateState('brightness', b);
+            updateState('contrast', c);
+            updateState('saturation', s);
+            updateState('exposure', 100);
+        }
+
+        function renderCanvas() {
+            if (!sourceImage.src || !sourceImage.complete) return;
+            const baseW = sourceImage.width;
+            const baseH = sourceImage.height;
+            let drawScale = state.scale / 100;
+            let drawW = baseW * drawScale;
+            let drawH = baseH * drawScale;
+            const maxEffectSize = Math.max(state.outlineSize, state.shadowBlur + Math.abs(state.shadowDist));
+            const paddingX = (maxEffectSize * 2) + Math.abs(state.posX) * 2 + 40;
+            const paddingY = (maxEffectSize * 2) + Math.abs(state.posY) * 2 + 40;
+
+            canvas.width = drawW + paddingX;
+            canvas.height = drawH + paddingY;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (state.bgType === 'solid') {
+                ctx.fillStyle = state.bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (state.bgType === 'gradient') {
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, '#8b5cf6'); grad.addColorStop(1, '#ec4899');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = baseW; offCanvas.height = baseH;
+            const offCtx = offCanvas.getContext('2d');
+            let combinedBrightness = state.brightness * (state.exposure / 100);
+            offCtx.filter = `brightness(${combinedBrightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%)`;
+            offCtx.drawImage(sourceImage, 0, 0, baseW, baseH);
+
+            let drawX = (canvas.width - drawW) / 2 + state.posX;
+            let drawY = (canvas.height - drawH) / 2 + state.posY;
+
+            if (state.outlineSize > 0) {
+                const silCanvas = document.createElement('canvas');
+                silCanvas.width = baseW; silCanvas.height = baseH;
+                const silCtx = silCanvas.getContext('2d');
+                silCtx.drawImage(offCanvas, 0, 0);
+                silCtx.globalCompositeOperation = 'source-in';
+                silCtx.fillStyle = state.outlineColor;
+                silCtx.fillRect(0, 0, baseW, baseH);
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i * 2 * Math.PI) / 16;
+                    const ox = drawX + Math.cos(angle) * state.outlineSize;
+                    const oy = drawY + Math.sin(angle) * state.outlineSize;
+                    ctx.drawImage(silCanvas, 0, 0, baseW, baseH, ox, oy, drawW, drawH);
+                }
+            }
+            ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            ctx.shadowBlur = state.shadowBlur;
+            ctx.shadowOffsetX = state.shadowDist; ctx.shadowOffsetY = state.shadowDist;
+            ctx.drawImage(offCanvas, 0, 0, baseW, baseH, drawX, drawY, drawW, drawH);
+        }
+
+        async function handleUpload(file) {
+            if (!file) return;
+            document.getElementById('upload-ui').classList.add('hidden');
+            document.getElementById('preview-ui').classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('loading-ui').classList.remove('hidden');
+            document.getElementById('loading-ui').classList.add('flex');
+            document.getElementById('raw-photo-preview').src = URL.createObjectURL(file);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                const response = await fetch('/api/remove-background', { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.success) {
+                    currentStickerUrl = data.sticker_url; // Save the sticker path
+                    sourceImage.onload = () => {
+                        renderCanvas();
+                        document.getElementById('preview-ui').classList.remove('hidden');
+                        document.getElementById('loading-ui').classList.add('hidden');
+                        document.getElementById('loading-ui').classList.remove('flex');
+                    };
+                    sourceImage.src = data.sticker_url + '?t=' + new Date().getTime();
+                } else {
+                    throw new Error(data.error || "Failed to process image.");
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('error-message').innerText = "❌ " + e.message;
+                document.getElementById('error-message').classList.remove('hidden');
+                document.getElementById('upload-ui').classList.remove('hidden');
+                document.getElementById('loading-ui').classList.add('hidden');
+                document.getElementById('loading-ui').classList.remove('flex');
+            }
+        }
+
+        function downloadSticker() {
+            if (!sourceImage.src) return alert("Please upload and process an image first!");
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'stickerify_pro_asset.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // NEW: Handoff to Marketing Agent
+        function sendToMarketing() {
+            if (!currentStickerUrl) {
+                alert("Upload an image first!");
+                return;
+            }
+            // Redirect the browser to the new page, passing the image url in the address bar
+            window.location.href = "/marketer?image=" + encodeURIComponent(currentStickerUrl);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina AI Marketing Desk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0b0b0e;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .checkerboard {
+            background-color: #1a1a24;
+            background-image: linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%, #13131a),
+                linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%, #13131a);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col overflow-hidden text-sm">
+
+    <!-- Top Header -->
+    <header class="flex justify-between items-center px-6 py-3 bg-[#13131a] border-b border-white/5 z-20">
+        <div class="flex items-center gap-3">
+            <span class="text-pink-500 text-xl">🚀</span>
+            <h1 class="text-lg font-bold tracking-wide text-white">Lumina Marketing Desk <span
+                    class="text-xs text-gray-500 ml-2 font-normal">Manager Agent</span></h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/"
+                class="px-3 py-1.5 bg-[#1a1a24] hover:bg-[#22222d] text-gray-300 border border-white/10 rounded-lg text-xs font-medium flex items-center gap-1.5 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Studio
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT PANEL: Asset & Instructions -->
+        <section
+            class="w-[400px] bg-[#13131a] border-r border-white/5 flex flex-col z-10 h-full overflow-y-auto scrollbar-hide">
+            <div class="p-6 border-b border-white/5">
+                <h3 class="font-semibold mb-4 text-gray-200 flex items-center gap-2">Final Asset Received</h3>
+                <div
+                    class="w-full aspect-square bg-[#1a1a24] rounded-xl border border-white/10 checkerboard flex items-center justify-center p-4">
+                    <!-- Jinja injects the image url passed from Python -->
+                    <img id="marketing-image" src="{{ image_url }}" alt="Final Product Asset"
+                        class="max-w-full max-h-full drop-shadow-2xl">
+                </div>
+            </div>
+
+            <div class="p-6 flex-1 flex flex-col">
+                <h3 class="font-semibold mb-2 text-pink-300 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                        </path>
+                    </svg>
+                    Campaign Instructions
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">Tell the Marketing Manager Agent what kind of post you need for
+                    this product.</p>
+
+                <textarea id="user-prompt" rows="5"
+                    class="w-full bg-[#1a1a24] border border-white/10 rounded-xl p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 resize-none mb-4"
+                    placeholder="e.g., 'Write a hype post for our summer collection drop, focus on durability and style.'"></textarea>
+
+                <button onclick="requestMarketingCopy()" id="generate-btn"
+                    class="w-full bg-gradient-to-r from-pink-600 to-violet-600 hover:from-pink-500 hover:to-violet-500 transition text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,72,153,0.3)] mt-auto">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                        </path>
+                    </svg>
+                    Generate 3 Caption Options
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Agent Output & MCP Guidelines -->
+        <section class="flex-1 flex flex-col relative bg-[#09090b] overflow-y-auto p-8">
+
+            <!-- MCP Notification Panel -->
+            <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 mb-8 flex items-start gap-4">
+                <div class="bg-blue-500/20 p-2 rounded-lg text-blue-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-blue-300 font-semibold mb-1 text-sm">MCP (Model Context Protocol) Active</h4>
+                    <p class="text-xs text-blue-200/70">The Marketing Agent has successfully loaded the corporate
+                        <strong>Brand Guidelines Database</strong>. All generated copy will automatically enforce brand
+                        tone, avoid banned words, and target Millennials/Gen Z.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="hidden flex-col items-center justify-center py-20">
+                <div class="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mb-4">
+                </div>
+                <p class="animate-pulse font-medium text-pink-300 text-sm">Marketing Manager is writing options...</p>
+            </div>
+
+            <!-- Generated Options Area -->
+            <div id="results-area" class="hidden">
+                <h2 class="text-xl font-bold text-white mb-6">Generated Copy Options</h2>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6" id="cards-container">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state"
+                class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-white/10 rounded-2xl h-[400px]">
+                <span class="text-4xl mb-4 opacity-50">📝</span>
+                <h3 class="text-gray-400 font-medium">Waiting for instructions</h3>
+                <p class="text-gray-600 text-xs mt-2 max-w-sm">Enter your campaign instructions on the left and click
+                    generate. The agent will provide 3 distinct options conforming to MCP guidelines.</p>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        async function requestMarketingCopy() {
+            const prompt = document.getElementById('user-prompt').value;
+            const imageUrl = document.getElementById('marketing-image').src;
+            // Parse the relative path out of the full URL (e.g., extracting "/static/uploads/...")
+            const relativeUrl = new URL(imageUrl).pathname;
+
+            if (!prompt) {
+                alert("Please provide some instructions for the campaign!");
+                return;
+            }
+
+            // UI Updates
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('results-area').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('loading-state').classList.add('flex');
+            document.getElementById('generate-btn').disabled = true;
+
+            try {
+                // Call Worker 3 API
+                const response = await fetch('/api/generate-marketing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_url: relativeUrl,
+                        prompt: prompt
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    renderOptions(data.reply);
+                    document.getElementById('loading-state').classList.add('hidden');
+                    document.getElementById('loading-state').classList.remove('flex');
+                    document.getElementById('results-area').classList.remove('hidden');
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error communicating with Marketing Agent: " + err.message);
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('loading-state').classList.remove('flex');
+                document.getElementById('empty-state').classList.remove('hidden');
+            } finally {
+                document.getElementById('generate-btn').disabled = false;
+            }
+        }
+
+        function renderOptions(replyText) {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = ''; // Clear previous
+
+            // The Prompt asked for "OPTION 1:", "OPTION 2:", "OPTION 3:"
+            // We split the string using a Regex to catch those dividers
+            const splits = replyText.split(/OPTION\s*[1-3]:/i);
+
+            // Filter out empty strings from the split
+            const options = splits.filter(text => text.trim().length > 0);
+
+            options.forEach((optText, index) => {
+                // Extract Predicted Engagement Badge if it exists
+                let badgeHtml = '';
+                const engagementMatch = optText.match(/\[Predicted Engagement:.*?\]/i);
+                let cleanText = optText;
+
+                if (engagementMatch) {
+                    badgeHtml = `<div class="bg-emerald-900/40 border border-emerald-500/50 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full inline-flex items-center gap-1 mb-4 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        ${engagementMatch[0].replace(/[\[\]]/g, '')}
+                    </div>`;
+                    cleanText = optText.replace(engagementMatch[0], ''); // Remove badge text from the main paragraph
+                }
+
+                const card = document.createElement('div');
+
+                // --- THE MAGIC UPGRADE: Gold border for the #1 Ranked Option ---
+                const borderClass = index === 0 ? "border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]" : "border-white/10 hover:border-pink-500/50";
+
+                card.className = `bg-[#13131a] border ${borderClass} rounded-xl p-6 flex flex-col transition-colors relative overflow-hidden`;
+
+                card.innerHTML = `
+                    ${index === 0 ? '<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>' : ''}
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black ${index === 0 ? 'text-yellow-400 bg-yellow-900/20' : 'text-pink-400 bg-pink-900/20'} px-2 py-1 rounded tracking-wider">
+                            ${index === 0 ? '🏆 TOP RANKED' : 'OPTION ' + (index + 1)}
+                        </span>
+                        <button onclick="navigator.clipboard.writeText(this.dataset.text); alert('Copied!')" data-text="${cleanText.replace(/"/g, '&quot;').trim()}" class="text-gray-400 hover:text-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                    ${badgeHtml}
+                    <p class="text-gray-300 text-sm whitespace-pre-wrap flex-1 mb-6 leading-relaxed">${cleanText.trim()}</p>
+                    <button onclick="navigator.clipboard.writeText(this.dataset.text); alert('Copied to clipboard ready for Instagram!')" data-text="${cleanText.replace(/"/g, '&quot;').trim()}" class="w-full py-2.5 ${index === 0 ? 'bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-500 border border-yellow-600/30' : 'bg-[#1a1a24] hover:bg-[#22222d] text-gray-300 border border-white/5'} rounded-lg text-xs font-bold transition mt-auto flex items-center justify-center gap-2">
+                        Approve & Copy
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+
+</html>
