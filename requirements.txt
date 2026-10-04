@@ -1,0 +1,10 @@
+Flask
+rembg
+Pillow
+google-genai
+python-dotenv
+textblob
+joblib
+scikit-learn
+pandas
+numpy
